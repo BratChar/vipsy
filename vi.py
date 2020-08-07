@@ -426,7 +426,9 @@ class BaseIRT(BasePsy):
             with pyro.poutine.scale(scale=1):
                 irt_param_kwargs['x'] = pyro.sample(
                     'x',
-                    dist.MultivariateNormal(torch.zeros((len(ind), self.x_feature)), torch.eye(self.x_feature))
+                    dist.MultivariateNormal(
+                        torch.zeros((len(ind), self.x_feature)),
+                        scale_tril=torch.eye(self.x_feature))
                 )
             irt_fun = self.IRT_FUN[self._model]
             p = irt_fun(**irt_param_kwargs)
@@ -485,7 +487,7 @@ class VIRT(BaseIRT):
         sample_size = self.sample_size
         subsample_size = self.subsample_size
         x_local = pyro.param('x_local', torch.zeros((sample_size, self.x_feature)))
-        scale_tril = pyro.param('x_scale', torch.tril(torch.eye(self.x_feature)), constraint=constraints.lower_cholesky)
+        scale_tril = pyro.param('x_scale', torch.eye(self.x_feature), constraint=constraints.lower_cholesky)
         with pyro.plate("data", sample_size, subsample_size=subsample_size) as idx:
             pyro.sample('x', dist.MultivariateNormal(x_local[idx], scale_tril=scale_tril))
 

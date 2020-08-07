@@ -116,9 +116,7 @@ class Irt2PLMultiDimTestCase(TestCase, TestMixin, IRTRandomMixin):
         for i in range(x_feature):
             random_instance.a[i, item_size - i:] = 0
         y = random_instance.y
-        a0 = random_instance.a
-        b0 = random_instance.b
-        model = VIRT(data=y, model='irt_2pl', x_feature=x_feature, subsample_size=100)
+        model = VIRT(data=y, model='irt_2pl', x_feature=x_feature)
         model.fit(optim=Adam({'lr': 1e-2}), max_iter=100000, random_instance=random_instance)
 
     def test_ai(self):
