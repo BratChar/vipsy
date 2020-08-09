@@ -423,13 +423,12 @@ class BaseIRT(BasePsy):
             irt_param_kwargs['d'] = pyro.param('d', torch.ones((1, item_size)) - 0.1,
                                                constraint=constraints.unit_interval)
         with pyro.plate("data", sample_size) as ind:
-            with pyro.poutine.scale(scale=1):
-                irt_param_kwargs['x'] = pyro.sample(
-                    'x',
-                    dist.MultivariateNormal(
-                        torch.zeros((len(ind), self.x_feature)),
-                        scale_tril=torch.eye(self.x_feature))
-                )
+            irt_param_kwargs['x'] = pyro.sample(
+                'x',
+                dist.MultivariateNormal(
+                    torch.zeros((len(ind), self.x_feature)),
+                    scale_tril=torch.eye(self.x_feature))
+            )
             irt_fun = self.IRT_FUN[self._model]
             p = irt_fun(**irt_param_kwargs)
             data_ = data[ind]
